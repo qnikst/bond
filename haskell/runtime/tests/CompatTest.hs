@@ -16,9 +16,9 @@ type GetFunc t a = BondGet t a -> BS.ByteString -> Either (BS.ByteString, Int64,
 type PutFunc t = BondPut t -> BS.ByteString
 
 fastBinaryData, compactBinaryV2Data :: String
-fastBinaryData = "/home/blaze/bond/test/compat/data/compat.fast.dat"
-compactBinaryV1Data = "/home/blaze/bond/test/compat/data/compat.compact.dat"
-compactBinaryV2Data = "/home/blaze/bond/test/compat/data/compat.compact2.dat"
+fastBinaryData      = "/home/qnikst/workspace/3rd-party/bond/test/compat/data/compat.fast.dat"
+compactBinaryV1Data = "/home/qnikst/workspace/3rd-party/bond/test/compat/data/compat.compact.dat"
+compactBinaryV2Data = "/home/qnikst/workspace/3rd-party/bond/test/compat/data/compat.compact2.dat"
 
 main :: IO ()
 main = defaultMain [

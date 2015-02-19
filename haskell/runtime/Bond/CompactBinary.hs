@@ -148,6 +148,16 @@ instance BondBinaryProto CompactBinaryV2Proto where
         BondPut $ putLazyByteString bs
     skipValue = skipCompactV2Value
 
+{-
+instance BondBinary CompactBinaryV1Proto a => BondBinary CompactBinaryV1Proto (Bonded a) where
+   bondPut (Bonded v) = bondPut v
+   bondGet = Bonded <$> bondGet
+
+instance BondBinary CompactBinaryV2Proto a => BondBinary CompactBinaryV2Proto (Bonded a) where
+   bondPut (Bonded v) = bondPut v
+   bondGet = Bonded <$> bondGet
+-}
+
 skipVarInt :: BondGet t ()
 skipVarInt = loop
     where

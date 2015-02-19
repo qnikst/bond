@@ -171,9 +171,9 @@ instance (BondBinary t ListHead, BondBinary t a, WireType a) => BondBinary t (Ve
         when (t /= getWireType (undefined :: a)) $ fail "bondGet (Vector a): type mismatch"
         V.replicateM n bondGet
 
-instance BondBinary t a => BondBinary t (Bonded a) where
-    bondPut (Bonded v) = bondPut v
-    bondGet = Bonded <$> bondGet
+--instance BondBinary t a => BondBinary t (Bonded a) where
+--   bondPut (Bonded v) = bondPut v
+--   bondGet = Bonded <$> bondGet
 
 putStructStop :: BondBinaryProto t => BondPut t
 putStructStop = bondPut BT_STOP

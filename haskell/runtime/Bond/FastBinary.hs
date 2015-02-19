@@ -60,6 +60,10 @@ instance BondBinary FastBinaryProto ListHead where
 
 instance BondBinaryProto FastBinaryProto
 
+instance BondBinary FastBinaryProto a => BondBinary FastBinaryProto (Bonded a) where
+   bondPut (Bonded v) = bondPut v
+   bondGet = Bonded <$> bondGet
+
 runFastBinaryGet :: BondGet FastBinaryProto a -> Lazy.ByteString -> Either (Lazy.ByteString, Int64, String) (Lazy.ByteString, Int64, a) 
 runFastBinaryGet (BondGet g) = runGetOrFail g
 
