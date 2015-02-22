@@ -2,9 +2,10 @@
 --
 -- Bond structure. 
 -- (Add documentation and examples from site)
-{-# Language GADTs, FlexibleContexts #-}
+{-# Language GADTs, FlexibleContexts, ScopedTypeVariables #-}
 module Bond.Data.Bonded (
         Bonded(..),
+        mkS,
         withBonded,
         deserialize
     ) where
@@ -39,6 +40,12 @@ instance Eq a => Eq (Bonded a) where
 -- XXX: is bonded an instance of functor ?
 -- XXX: is bonded an instance of traversable ?
 -- XXX: is bonded an instance of foldable?
+
+-- | Create serialized representation.
+mkS :: forall proxy p a . (IsProtocol p, BondBinary p a) => proxy p -> ByteString -> Bonded a
+mkS p bs = S (mkGet p) bs
+    where mkGet :: proxy p -> BondGet p a 
+          mkGet _ = bondGet
 
 -- | Perform an action with current bondable, deserialized value is
 -- not shared between computations.
