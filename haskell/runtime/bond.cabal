@@ -50,6 +50,8 @@ library
 
   other-modules:    Bond.BinaryProto,
                     Bond.Binary.Class
+                    Bond.Protocol.Types
+                    Bond.Protocol.Class
                     Bond.Data.Bonded,
                     Bond.CompactBinary,
                     Bond.Default,

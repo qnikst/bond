@@ -28,6 +28,7 @@ module Bond.Types (
   ) where
 
 import Bond.Data.Bonded
+import Bond.Protocol.Types
 
 import Data.Int
 import Data.Word
@@ -56,9 +57,6 @@ instance EncodedString Utf16 where fromString = Utf16 . T.encodeUtf16LE . T.pack
 
 instance Show Utf8 where show (Utf8 s) = show $ T.unpack $ T.decodeUtf8 s
 instance Show Utf16 where show (Utf16 s) = show $ T.unpack $ T.decodeUtf16LE s
-
-newtype ProtoSig = ProtoSig Word16
-    deriving Eq
 
 compactSig, simpleSig, fastSig :: ProtoSig
 compactSig = ProtoSig 0x4342
