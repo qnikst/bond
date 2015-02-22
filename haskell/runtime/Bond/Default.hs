@@ -78,7 +78,7 @@ instance Default (Vector a) where
     -- default value for vector is always V.empty
     equalToDefault a b = V.null a && V.null b
 instance Default a => Default (Bonded a) where
-    defaultValue = BondedObject defaultValue
+    defaultValue = V defaultValue
     -- Default value check is performed to decide if field needs to be written.
     -- Bonded streams must always be written.
     equalToDefault _ _ = False

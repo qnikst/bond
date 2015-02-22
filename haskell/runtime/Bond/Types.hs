@@ -1,8 +1,8 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Bond.Types (
     Blob(..),
-    Bonded(..),
     Bool,
+    Bonded(..),
     Double,
     EncodedString(..),
     Float,
@@ -27,11 +27,12 @@ module Bond.Types (
     simpleSig
   ) where
 
+import Bond.Data.Bonded
+
 import Data.Int
 import Data.Word
 import Data.Hashable
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as Lazy
 import qualified Data.HashSet as H
 import qualified Data.Map as M
 import qualified Data.Text as T
@@ -63,14 +64,3 @@ compactSig, simpleSig, fastSig :: ProtoSig
 compactSig = ProtoSig 0x4342
 simpleSig = ProtoSig 0x5350
 fastSig = ProtoSig 0x4D46
-
-data Bonded a = BondedStream Lazy.ByteString ProtoSig Word16 | BondedObject a
-
-instance Show a => Show (Bonded a) where
-    show BondedStream{} = "BondedStream"
-    show (BondedObject v) = show v
-
-instance Eq a => Eq (Bonded a) where
-    (BondedObject v1) == (BondedObject v2) = v1 == v2
-    _ == _ = True
---    (BondedStream s1 p1 v1) == (BondedStream s2 p1 v1) = unpackBonded p1 v1 s1 == unpackBonded p2 v2 s2

@@ -8,6 +8,7 @@ module Bond.SimpleBinary (
     runSimpleBinaryV1Put
   ) where
 
+import Bond.Binary.Class
 import Bond.BinaryProto
 import Bond.Schema
 import Bond.Types
@@ -138,13 +139,13 @@ instance BondBinaryProto SimpleBinaryProto where
     putStructStop = return ()
     putStructStopBase = return ()
 
-getBondedContainer :: BondGet t (Bonded a)
+getBondedContainer :: forall t a . BondBinary t a => BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
     proto <- ProtoSig <$> BondGet getWord16be
     ver <- BondGet getWord16le
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-    return $ BondedStream bs proto ver
+    return $ S (bondGet :: BondGet t a) bs
 
 putContainer :: Lazy.ByteString -> ProtoSig -> Word16 -> BondPut t
 putContainer s (ProtoSig proto) ver = do
@@ -154,12 +155,12 @@ putContainer s (ProtoSig proto) ver = do
     BondPut $ putLazyByteString s
 
 putBondedContainerV1 :: forall a. BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
-putBondedContainerV1 (BondedStream s proto ver) = putContainer s proto ver
-putBondedContainerV1 (BondedObject a) = putContainer (runSimpleBinaryV1Put $ bondPut a) simpleSig 1
+putBondedContainerV1 (S _ s) = putContainer s undefined undefined {-proto ver-}  -- XXX: protocol and version
+putBondedContainerV1 (V a) = putContainer (runSimpleBinaryV1Put $ bondPut a) simpleSig 1
 
 putBondedContainer :: forall a. BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
-putBondedContainer (BondedStream s proto ver) = putContainer s proto ver
-putBondedContainer (BondedObject a) = putContainer (runSimpleBinaryPut $ bondPut a) simpleSig 2
+putBondedContainer (S _ s) = putContainer s undefined undefined {-proto ver-} -- XXX: protocol and version
+putBondedContainer (V a) = putContainer (runSimpleBinaryPut $ bondPut a) simpleSig 2
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a
 readSimpleBinaryStruct update r = foldM (\v (FieldInfo _ o) -> update v undefined o) r schema
