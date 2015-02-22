@@ -10,6 +10,8 @@ module Bond.SimpleBinary (
 
 import Bond.Protocol.Class
 import Bond.Binary.Class
+import Bond.Protocol.Registry
+
 import Bond.BinaryProto
 import Bond.Schema
 import Bond.Types
