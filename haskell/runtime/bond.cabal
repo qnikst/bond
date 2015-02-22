@@ -49,6 +49,7 @@ library
                     Bond.Imports
 
   other-modules:    Bond.BinaryProto,
+                    Bond.Binary.Class
                     Bond.Bonded,
                     Bond.CompactBinary,
                     Bond.Default,
@@ -67,6 +68,8 @@ library
                     text >= 1.2,
                     unordered-containers >= 0.2,
                     vector >= 0.10
+  other-extensions: MultiParamTypeClasses
+                    GeneralizedNewtypeDeriving
 
 test-suite compat
   type:             exitcode-stdio-1.0

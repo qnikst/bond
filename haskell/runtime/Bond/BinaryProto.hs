@@ -12,6 +12,7 @@ module Bond.BinaryProto (
     skipBinaryValue
   ) where
 
+import Bond.Binary.Class
 import Bond.Default
 import Bond.Schema
 import Bond.Types
@@ -33,15 +34,6 @@ import qualified Data.Vector as V
 
 newtype VarInt = VarInt { fromVarInt :: Int }
 
-newtype BondGet t a = BondGet (Get a)
-    deriving (Functor, Applicative, Monad)
-newtype BondPutM t a = BondPut (PutM a)
-    deriving (Functor, Applicative, Monad)
-type BondPut t = BondPutM t ()
-
-class BondBinary t a where
-    bondGet :: BondGet t a
-    bondPut :: a -> BondPut t
 
 class BondBinary t a => BondBinaryStruct t a where
     bondGetBase :: BondGet t a
