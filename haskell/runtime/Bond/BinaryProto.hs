@@ -13,6 +13,7 @@ module Bond.BinaryProto (
   ) where
 
 import Bond.Binary.Class
+import Bond.Protocol.Class
 import Bond.Default
 import Bond.Schema
 import Bond.Types
@@ -163,7 +164,7 @@ instance (BondBinaryProto t, BondBinaryStruct t a) => BondBinary t (Bonded a) wh
 class (BondBinary t Int8, BondBinary t Int16, BondBinary t Int32, BondBinary t Int64,
        BondBinary t Word8, BondBinary t Word16, BondBinary t Word32, BondBinary t Word64,
        BondBinary t FieldTag, BondBinary t ListHead, BondBinary t StringHead,
-       BondBinary t MapHead) =>
+       BondBinary t MapHead, IsProtocol t) =>
         BondBinaryProto t where
     checkTypeAndGet :: (BondBinary t a, WireType a) => ItemType -> BondGet t a
     checkTypeAndGet = checkTypeAndGet'

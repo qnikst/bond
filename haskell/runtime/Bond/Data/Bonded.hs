@@ -2,7 +2,7 @@
 --
 -- Bond structure. 
 -- (Add documentation and examples from site)
-{-# Language GADTs #-}
+{-# Language GADTs, FlexibleContexts #-}
 module Bond.Data.Bonded (
         Bonded(..),
         withBonded,
@@ -10,6 +10,7 @@ module Bond.Data.Bonded (
     ) where
 
 import Bond.Binary.Class
+import Bond.Protocol.Class
 
 import           Data.Binary.Get (runGet)
 import           Data.ByteString.Lazy (ByteString)
@@ -19,7 +20,8 @@ import           Data.ByteString.Lazy (ByteString)
 -- | A wrapper for Bonded type see (XXX: link to documentation)
 data Bonded a where
    V :: a -> Bonded a                         -- ^ Value
-   S :: BondGet p a -> ByteString -> Bonded a -- ^ Serialized value for known protocol
+   S :: (IsProtocol p)
+     => BondGet p a -> ByteString -> Bonded a -- ^ Serialized value for known protocol
                                               -- XXX: possibly that we need more compilcated
                                               --      stuff here like Proxy p or other, but
                                               --      we don't need that yet, or really

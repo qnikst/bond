@@ -11,6 +11,7 @@ module Bond.CompactBinary (
     decodeInt       -- export for testing
   ) where
 
+import Bond.Protocol.Class
 import Bond.BinaryProto
 import Bond.Types
 import Bond.Wire
@@ -22,7 +23,14 @@ import Data.Bits
 import qualified Data.ByteString.Lazy as Lazy
 
 data CompactBinaryV1Proto
+instance ProtocolVersion   CompactBinaryV1Proto where protocolVersion _ = 1
+instance ProtocolSignature CompactBinaryV1Proto where protocolSignature _ = compactSig
+instance IsProtocol        CompactBinaryV1Proto
+
 data CompactBinaryProto
+instance ProtocolVersion   CompactBinaryProto where protocolVersion _ = 0
+instance ProtocolSignature CompactBinaryProto where protocolSignature _ = compactSig
+instance IsProtocol        CompactBinaryProto
 
 newtype EncodedWord = EncodedWord { unWord :: Word64 }
 newtype EncodedInt = EncodedInt { unInt :: Int64 }

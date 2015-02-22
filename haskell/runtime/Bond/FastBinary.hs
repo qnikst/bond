@@ -5,6 +5,7 @@ module Bond.FastBinary (
     runFastBinaryPut
   ) where
 
+import Bond.Protocol.Class
 import Bond.BinaryProto
 import Bond.Types
 import Bond.Wire
@@ -14,6 +15,10 @@ import Data.Binary.Put
 import qualified Data.ByteString.Lazy as Lazy
 
 data FastBinaryProto
+
+instance ProtocolVersion   FastBinaryProto where protocolVersion _ = 0
+instance ProtocolSignature FastBinaryProto where protocolSignature _ = fastSig
+instance IsProtocol        FastBinaryProto
 
 instance BondBinary FastBinaryProto Word16 where
     bondGet = BondGet getWord16le

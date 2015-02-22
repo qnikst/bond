@@ -8,6 +8,7 @@ module Bond.SimpleBinary (
     runSimpleBinaryV1Put
   ) where
 
+import Bond.Protocol.Class
 import Bond.Binary.Class
 import Bond.BinaryProto
 import Bond.Schema
@@ -21,7 +22,14 @@ import Data.Proxy
 import qualified Data.ByteString.Lazy as Lazy
 
 data SimpleBinaryV1Proto
+instance ProtocolVersion   SimpleBinaryV1Proto where protocolVersion _ = 1
+instance ProtocolSignature SimpleBinaryV1Proto where protocolSignature _ = simpleSig
+instance IsProtocol        SimpleBinaryV1Proto
+
 data SimpleBinaryProto
+instance ProtocolVersion   SimpleBinaryProto where protocolVersion _ = 1
+instance ProtocolSignature SimpleBinaryProto where protocolSignature _ = simpleSig
+instance IsProtocol        SimpleBinaryProto
 
 instance BondBinary SimpleBinaryV1Proto Word16 where
     bondGet = BondGet getWord16le
@@ -139,7 +147,7 @@ instance BondBinaryProto SimpleBinaryProto where
     putStructStop = return ()
     putStructStopBase = return ()
 
-getBondedContainer :: forall t a . BondBinary t a => BondGet t (Bonded a)
+getBondedContainer :: forall t a . (IsProtocol t, BondBinary t a) => BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
     proto <- ProtoSig <$> BondGet getWord16be
@@ -155,11 +163,13 @@ putContainer s (ProtoSig proto) ver = do
     BondPut $ putLazyByteString s
 
 putBondedContainerV1 :: forall a. BondBinaryStruct SimpleBinaryV1Proto a => Bonded a -> BondPut SimpleBinaryV1Proto
-putBondedContainerV1 (S _ s) = putContainer s undefined undefined {-proto ver-}  -- XXX: protocol and version
+putBondedContainerV1 (S g s) = putContainer s (protocolSignature g)
+                                              (protocolVersion g)
 putBondedContainerV1 (V a) = putContainer (runSimpleBinaryV1Put $ bondPut a) simpleSig 1
 
 putBondedContainer :: forall a. BondBinaryStruct SimpleBinaryProto a => Bonded a -> BondPut SimpleBinaryProto
-putBondedContainer (S _ s) = putContainer s undefined undefined {-proto ver-} -- XXX: protocol and version
+putBondedContainer (S g s) = putContainer s (protocolSignature g)
+                                            (protocolVersion g)
 putBondedContainer (V a) = putContainer (runSimpleBinaryPut $ bondPut a) simpleSig 2
 
 readSimpleBinaryStruct :: forall t a. BondBinaryStruct t a => (a -> ItemType -> Ordinal -> BondGet t a) -> a -> BondGet t a

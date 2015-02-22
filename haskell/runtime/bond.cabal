@@ -72,6 +72,7 @@ library
                     vector >= 0.10
   other-extensions: MultiParamTypeClasses
                     GeneralizedNewtypeDeriving
+                    FlexibleContexts
 
 test-suite compat
   type:             exitcode-stdio-1.0
