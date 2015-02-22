@@ -11,6 +11,7 @@ module Bond.SimpleBinary (
 import Bond.Protocol.Class
 import Bond.Binary.Class
 import Bond.Protocol.Registry
+import Bond.Data.Bonded
 
 import Bond.BinaryProto
 import Bond.Schema
@@ -149,13 +150,13 @@ instance BondBinaryProto SimpleBinaryProto where
     putStructStop = return ()
     putStructStopBase = return ()
 
-getBondedContainer :: forall t a . (IsProtocol t, BondBinary t a) => BondGet t (Bonded a)
+getBondedContainer :: BondGet t (Bonded a)
 getBondedContainer = do
     size <- BondGet getWord32le
     proto <- ProtoSig <$> BondGet getWord16be
     ver <- BondGet getWord16le
     bs <- BondGet $ getLazyByteString (fromIntegral $ size - 4)
-    return $ S (bondGet :: BondGet t a) bs
+    return $! withProtocol proto ver $ \p -> mkS p bs
 
 putContainer :: Lazy.ByteString -> ProtoSig -> Word16 -> BondPut t
 putContainer s (ProtoSig proto) ver = do

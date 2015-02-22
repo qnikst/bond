@@ -1,7 +1,8 @@
 -- | Copyright: 2015 (C) Copyright holder
 
 module Bond.Protocol.Types
-    ( ProtoSig(..)
+    ( -- * protocol types
+      ProtoSig(..)
     , ProtoVer
     ) where
 

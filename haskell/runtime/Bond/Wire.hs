@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 module Bond.Wire (
     FieldTag(..),
     ItemType(..),
@@ -5,33 +6,16 @@ module Bond.Wire (
     MapHead(..),
     Ordinal(..),
     StringHead(..),
-    WireType(..)
+    WireType(..),
+    toWireType,
+    fromWireType
   ) where
 
+import Bond.Protocol.Wire
 import Bond.Types
+
 import Data.Proxy
 
-data ItemType =
-      BT_STOP
-    | BT_STOP_BASE
-    | BT_BOOL
-    | BT_UINT8
-    | BT_UINT16
-    | BT_UINT32
-    | BT_UINT64
-    | BT_FLOAT
-    | BT_DOUBLE
-    | BT_STRING
-    | BT_STRUCT
-    | BT_LIST
-    | BT_SET
-    | BT_MAP
-    | BT_INT8
-    | BT_INT16
-    | BT_INT32
-    | BT_INT64
-    | BT_WSTRING
-    deriving (Show, Enum, Eq)
 
 class WireType a where
     getWireType :: Proxy a -> ItemType
@@ -56,12 +40,3 @@ instance WireType (Map a b) where getWireType _ = BT_MAP
 instance WireType (HashSet a) where getWireType _ = BT_SET
 instance WireType (Vector a) where getWireType _ = BT_LIST
 instance WireType (Bonded a) where getWireType _ = BT_STRUCT
-
-newtype Ordinal = Ordinal Word16
-    deriving (Eq, Show)
-
-data FieldTag = FieldTag ItemType Ordinal
-
-data ListHead = ListHead (Maybe ItemType) Int
-data MapHead = MapHead (Maybe ItemType) (Maybe ItemType) Int
-newtype StringHead = StringHead Int

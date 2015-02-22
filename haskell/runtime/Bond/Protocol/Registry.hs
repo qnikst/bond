@@ -18,7 +18,6 @@ import Bond.CompactBinary
 import {-# SOURCE #-} Bond.SimpleBinary
 
 import           Data.Proxy
-import           Data.Map (Map)
 import qualified Data.Map as Map
 import           Data.Maybe
 

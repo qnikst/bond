@@ -53,6 +53,7 @@ library
                     Bond.Protocol.Types
                     Bond.Protocol.Class
                     Bond.Protocol.Registry
+                    Bond.Protocol.Wire
                     Bond.Protocol
                     Bond.Data.Bonded,
                     Bond.CompactBinary,
@@ -75,9 +76,11 @@ library
   other-extensions: MultiParamTypeClasses
                     GeneralizedNewtypeDeriving
                     FlexibleContexts
+                    FlexibleInstances
                     ExistentialQuantification
                     Rank2Types
                     ScopedTypeVariables
+                    UndecidableInstances
 
 test-suite compat
   type:             exitcode-stdio-1.0

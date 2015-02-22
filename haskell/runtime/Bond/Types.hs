@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, UndecidableInstances #-}
 module Bond.Types (
     Blob(..),
     Bool,
@@ -14,6 +14,7 @@ module Bond.Types (
     Int8,
     Maybe,
     M.Map,
+    StringHead(..),
     Utf16(..),
     Utf8(..),
     V.Vector,
@@ -27,9 +28,15 @@ module Bond.Types (
     simpleSig
   ) where
 
+import Bond.Binary.Class
 import Bond.Data.Bonded
 import Bond.Protocol.Types
+import Bond.Protocol.Wire
 
+import Control.Applicative
+import Control.Monad (unless)
+import Data.Binary.Get
+import Data.Binary.Put
 import Data.Int
 import Data.Word
 import Data.Hashable
@@ -40,14 +47,41 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Vector as V
 
+newtype StringHead = StringHead Int
+
 newtype Utf8 = Utf8 BS.ByteString
     deriving (Eq, Ord, Hashable)
+
+instance BondBinary t StringHead => BondBinary t Utf8 where
+    bondPut (Utf8 s) = do
+        bondPut $ StringHead $ BS.length s
+        BondPut $ putByteString s
+    bondGet = do
+        StringHead n <- bondGet
+        Utf8 <$> (BondGet $ getByteString n)
 
 newtype Utf16 = Utf16 BS.ByteString
     deriving (Eq, Ord, Hashable)
 
+instance BondBinary t StringHead => BondBinary t Utf16 where
+    bondPut (Utf16 s) = do
+        bondPut $ StringHead $ BS.length s `div` 2
+        BondPut $ putByteString s
+    bondGet = do
+        StringHead n <- bondGet
+        Utf16 <$> (BondGet $ getByteString (n * 2))
+
 newtype Blob = Blob BS.ByteString
     deriving (Show, Eq, Ord, Hashable)
+
+instance BondBinary t ListHead => BondBinary t Blob where
+    bondPut (Blob s) = do
+        bondPut $ ListHead (Just BT_INT8) (BS.length s)
+        BondPut $ putByteString s
+    bondGet = do
+        ListHead t n <- bondGet
+        unless (maybe True (== BT_INT8) t) $ fail "bondGet Blob: type mismatch"
+        BondGet (Blob <$> getByteString n)
 
 class EncodedString a where
     fromString :: String -> a
